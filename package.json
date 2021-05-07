@@ -1,0 +1,19 @@
+{
+  "name": "ccs-bot",
+  "version": "1.0.0",
+  "description": "ccs diiscord bot",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
