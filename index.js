@@ -16,4 +16,4 @@ client.on('message', msg => {
 
 // Here you can login the bot. It automatically attempts to login the bot
 // with the environment variable you set for your bot token ("DISCORD_TOKEN")
-client.login();
+client.login(process.env.DISCORD_TOKEN);
