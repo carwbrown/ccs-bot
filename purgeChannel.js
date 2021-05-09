@@ -1,3 +1,3 @@
-export function purgeChannel (msg){
+function purgeChannel (msg){
   msg.reply('purge')
 }

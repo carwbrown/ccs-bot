@@ -1,4 +1,4 @@
-import { purgeChannel } from './purgeChannel'
+const purgeChannel = require('./purgeChannel.js')
 
 const Discord = require('discord.js');
 // Importing this allows you to access the environment variables of the running node process
