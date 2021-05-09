@@ -1,3 +1,5 @@
+import { purgeChannel } from './purgeChannel'
+
 const Discord = require('discord.js');
 // Importing this allows you to access the environment variables of the running node process
 require('dotenv').config();
@@ -11,6 +13,9 @@ client.on('ready', () => {
 client.on('message', msg => {
   if (msg.content === 'ping') {
     msg.reply('Pong! test');
+  }
+  if (msg.content === 'purgeChannel') {
+    purgeChannel(msg);
   }
 });
 
