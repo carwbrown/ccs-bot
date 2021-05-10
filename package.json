@@ -1,8 +1,9 @@
 {
   "name": "ccs-bot",
   "version": "1.0.0",
-  "description": "ccs diiscord bot",
+  "description": "ccs discord bot",
   "main": "index.js",
+  "type": "module",
   "directories": {
     "test": "test"
   },
