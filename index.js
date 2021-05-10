@@ -15,8 +15,8 @@ client.on("message", (msg) => {
   if (msg.content === "!ping") {
     msg.reply("Pong! test");
   }
-  if (msg.content.startsWith === "!purge") {
-    purgeChannel(msg);
+  if (msg.content.startsWith("!purge")) {
+    purgeChannel(client, msg);
   }
 });
 
