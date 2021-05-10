@@ -2,6 +2,12 @@ import { purgeChannel } from "./purgeChannel.js";
 import Discord from "discord.js";
 import dotenv from "dotenv";
 
+// todo:
+// rip off ideas from here https://github.com/Asddsa76/Probius
+// auto add tournament captain flag with a command
+// move all the ccs info commands
+// open house bot?
+
 // Importing this allows you to access the environment variables of the running node process
 dotenv.config();
 
