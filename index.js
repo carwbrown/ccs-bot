@@ -12,10 +12,10 @@ client.on("ready", () => {
 });
 
 client.on("message", (msg) => {
-  if (msg.content === "ping") {
+  if (msg.content === "!ping") {
     msg.reply("Pong! test");
   }
-  if (msg.content === "purgeChannel") {
+  if (msg.content.startsWith === "!purge") {
     purgeChannel(msg);
   }
 });
