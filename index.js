@@ -1,12 +1,7 @@
 import { purgeChannel } from "./purgeChannel.js";
 import Discord from "discord.js";
 import dotenv from "dotenv";
-
-// todo:
-// rip off ideas from here https://github.com/Asddsa76/Probius
-// auto add tournament captain flag with a command
-// move all the ccs info commands
-// open house bot?
+import fs from "fs";
 
 // Importing this allows you to access the environment variables of the running node process
 dotenv.config();
@@ -27,6 +22,31 @@ client.on("message", (msg) => {
   ) {
     purgeChannel(client, msg);
   }
+
+  setInterval(() => {
+    console.log("Hello, interval has started");
+
+    fs.readFile("./css.json", (err, data) => {
+      if (err) throw err;
+      let fileData = JSON.parse(data);
+      const timeNow = Date().getTime();
+      console.log("fileData: ", fileData);
+      if (fileData[TEST_ID].ttl + fileData[TEST_ID].lastDelete < timeNow) {
+        const newFileData = {
+          ...fileData,
+          [TEST_ID]: {
+            ...fileData[TEST_ID],
+            lastDelete: timeNow,
+          },
+        };
+        console.log("newFileData: ", newFileData);
+        fs.writeFile("./css.json", newFileData, (err) => {
+          if (err) throw err;
+          console.log("Now, please delete me");
+        });
+      }
+    });
+  }, 3000);
 });
 
 client.on("guildMemberAdd", (member) => {
