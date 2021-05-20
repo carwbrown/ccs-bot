@@ -29,7 +29,7 @@ client.on("message", (msg) => {
     fs.readFile("./css.json", (err, data) => {
       if (err) throw err;
       let fileData = JSON.parse(data);
-      const timeNow = Date().getTime();
+      const timeNow = new Date().getTime();
       console.log("fileData: ", fileData);
       if (fileData[TEST_ID].ttl + fileData[TEST_ID].lastDelete < timeNow) {
         const newFileData = {
