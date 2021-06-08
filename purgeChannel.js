@@ -16,9 +16,14 @@ export function purgeChannel(client, msg) {
   msg.author.send(`${generalChannel.name} channel has been cleaned out`);
 }
 
-export function purgeChannelById(client, channelId, ttlMsg) {
+export async function purgeChannelById(client, channelId, ttlMsg, timeNow) {
   const channelObj = client.channels.cache.get(channelId);
 
-  console.log(channelObj.messages);
-  // channelObj.bulkDelete(99, true);
+  const messages = await channelObj.messages.fetch();
+
+  for (let value of messages.values()) {
+    if(value.createdTimestamp + ttlMsg < timeNow){
+      channelObj.messages.delete(value.id)
+    }
+  }
 }
