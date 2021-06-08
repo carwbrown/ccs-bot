@@ -36,119 +36,128 @@ client.on("message", (msg) => {
 //   channel.send(`!dadjoke`);
 // });
 
-// const SERVER_ID_APLAN = "334921100582715403";
-// const CHANNEL_ID_APLAN = "334921100582715403";
+const SERVER_ID_APLAN = "334921100582715403";
+const CHANNEL_ID_APLAN = "334921100582715403";
 
+setInterval(() => {
+  console.log("Hello, aplan interval has started");
+
+  fs.readFile("./css.json", (err, data) => {
+    if (err) throw err;
+    let fileData = JSON.parse(data);
+    const timeNow = new Date().getTime();
+    if (
+      fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].ttl +
+        fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].lastDelete <
+      timeNow
+    ) {
+      const newFileData = {
+        ...fileData,
+        [SERVER_ID_APLAN]: {
+          ...fileData[SERVER_ID_APLAN],
+          [CHANNEL_ID_APLAN]: {
+            ...fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN],
+            lastDelete:
+              fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].ttl +
+              fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].lastDelete,
+          },
+        },
+      };
+      fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
+        if (err) throw err;
+        purgeChannelById(client, CHANNEL_ID_APLAN, 60000, timeNow);
+        console.log(
+          `${fileData[SERVER_ID_APLAN].name}'s ${fileData[SERVER_ID_APLAN][CHANNEL_ID_CCS_LFG].name} channel just checked`,
+        );
+      });
+    }
+  });
+}, 60000); // check every minute
+
+// const SERVER_ID_CCS = "186674984847015936";
+
+// const TEN_HOURS_MS = 36000000;
+// const CHANNEL_ID_CCS_LFG = "726588620529598577";
+
+// const FOURTEEN_DAYS_MS = 1209600000;
+// const CHANNEL_ID_CCS_SCRIM = "675808497988009986";
+
+// // LFG CCS channel
 // setInterval(() => {
-//   console.log("Hello, interval has started");
+//   console.log("Hello, lfg interval has started");
 
 //   fs.readFile("./css.json", (err, data) => {
 //     if (err) throw err;
 //     let fileData = JSON.parse(data);
 //     const timeNow = new Date().getTime();
 //     if (
-//       fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].ttl +
-//         fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].lastDelete <
+//       fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl +
+//         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].lastDelete <
 //       timeNow
 //     ) {
 //       const newFileData = {
 //         ...fileData,
-//         [SERVER_ID_APLAN]: {
-//           ...fileData[SERVER_ID_APLAN],
-//           [CHANNEL_ID_APLAN]: {
-//             ...fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN],
-//             lastDelete: timeNow,
+//         [SERVER_ID_CCS]: {
+//           ...fileData[SERVER_ID_CCS],
+//           [CHANNEL_ID_CCS_LFG]: {
+//             ...fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG],
+//             lastDelete:
+//               fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl +
+//               fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].lastDelete,
 //           },
 //         },
 //       };
 //       fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
 //         if (err) throw err;
-//         purgeChannelById(client, CHANNEL_ID_APLAN);
+//         purgeChannelById(client, CHANNEL_ID_CCS_LFG, TEN_HOURS_MS, timeNow);
 //         console.log(
-//           `${fileData[SERVER_ID_APLAN].name}'s ${fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].name} channel just purged`,
+//           `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].name} channel just checked`,
 //         );
 //       });
 //     }
 //   });
-// }, 180000);
+// }, 180000); // check every 3 minutes
 
-const SERVER_ID_CCS = "186674984847015936";
-const CHANNEL_ID_CCS_LFG = "726588620529598577";
-const FOURTEEN_DAYS_MS = 1209600000;
-const TEN_HOURS_MS = 36000000;
-const CHANNEL_ID_CCS_SCRIM = "675808497988009986";
+// // SCRIM channel
+// setInterval(() => {
+//   console.log("Hello, scrim channel interval has started");
 
-// LFG CCS channel
-setInterval(() => {
-  console.log("Hello, lfg interval has started");
-
-  fs.readFile("./css.json", (err, data) => {
-    if (err) throw err;
-    let fileData = JSON.parse(data);
-    const timeNow = new Date().getTime();
-    if (
-      fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl +
-        fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].lastDelete <
-      timeNow
-    ) {
-      const newFileData = {
-        ...fileData,
-        [SERVER_ID_CCS]: {
-          ...fileData[SERVER_ID_CCS],
-          [CHANNEL_ID_CCS_LFG]: {
-            ...fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG],
-            lastDelete:
-              fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl +
-              fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].lastDelete,
-          },
-        },
-      };
-      fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
-        if (err) throw err;
-        purgeChannelById(client, CHANNEL_ID_CCS_LFG, TEN_HOURS_MS, timeNow);
-        console.log(
-          `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].name} channel just purged`,
-        );
-      });
-    }
-  });
-}, 180000); // check every 3 minutes
-
-// SCRIM channel
-setInterval(() => {
-  console.log("Hello, scrim channel interval has started");
-
-  fs.readFile("./css.json", (err, data) => {
-    if (err) throw err;
-    let fileData = JSON.parse(data);
-    const timeNow = new Date().getTime();
-    if (
-      fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].ttl +
-        fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].lastDelete <
-      timeNow
-    ) {
-      const newFileData = {
-        ...fileData,
-        [SERVER_ID_CCS]: {
-          ...fileData[SERVER_ID_CCS],
-          [CHANNEL_ID_CCS_SCRIM]: {
-            ...fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM],
-            lastDelete:
-              fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl +
-              fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].lastDelete,
-          },
-        },
-      };
-      fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
-        if (err) throw err;
-        purgeChannelById(client, CHANNEL_ID_CCS_SCRIM, FOURTEEN_DAYS_MS, timeNow);
-        console.log(
-          `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].name} channel just purged`,
-        );
-      });
-    }
-  });
-}, 210000); // check every 3.5 minutes
+//   fs.readFile("./css.json", (err, data) => {
+//     if (err) throw err;
+//     let fileData = JSON.parse(data);
+//     const timeNow = new Date().getTime();
+//     if (
+//       fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].ttl +
+//         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].lastDelete <
+//       timeNow
+//     ) {
+//       const newFileData = {
+//         ...fileData,
+//         [SERVER_ID_CCS]: {
+//           ...fileData[SERVER_ID_CCS],
+//           [CHANNEL_ID_CCS_SCRIM]: {
+//             ...fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM],
+//             lastDelete:
+//               fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].ttl +
+//               fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].lastDelete,
+//           },
+//         },
+//       };
+//       fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
+//         if (err) throw err;
+//         purgeChannelById(
+//           client,
+//           CHANNEL_ID_CCS_SCRIM,
+//           FOURTEEN_DAYS_MS,
+//           timeNow,
+//         );
+//         console.log(
+//           `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].name} channel just checked`,
+//         );
+//       });
+//     }
+//   });
+// }, 210000); // check every 3.5 minutes
 
 // Here you can login the bot. It automatically attempts to login the bot
 // with the environment variable you set for your bot token ("DISCORD_TOKEN")
