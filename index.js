@@ -36,9 +36,9 @@ client.on("message", (msg) => {
 //   channel.send(`!dadjoke`);
 // });
 
-const SERVER_ID_APLAN = "334921100582715403";
-const CHANNEL_ID_APLAN = "334921100582715403";
-
+const SERVER_ID_CCS = "186674984847015936";
+const CHANNEL_ID_CCS_TEST = "851879663503409152";
+const THREE_MINUTES_MS = 180000;
 setInterval(() => {
   console.log("Hello, aplan interval has started");
 
@@ -47,34 +47,37 @@ setInterval(() => {
     let fileData = JSON.parse(data);
     const timeNow = new Date().getTime();
     if (
-      fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].ttl +
-        fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].lastDelete <
+      fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].ttl +
+        fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].lastDelete <
       timeNow
     ) {
       const newFileData = {
         ...fileData,
-        [SERVER_ID_APLAN]: {
-          ...fileData[SERVER_ID_APLAN],
-          [CHANNEL_ID_APLAN]: {
-            ...fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN],
+        [SERVER_ID_CCS]: {
+          ...fileData[SERVER_ID_CCS],
+          [CHANNEL_ID_CCS_TEST]: {
+            ...fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST],
             lastDelete:
-              fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].ttl +
-              fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].lastDelete,
+              fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].ttl +
+              fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].lastDelete,
           },
         },
       };
       fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
         if (err) throw err;
-        purgeChannelById(client, CHANNEL_ID_APLAN, 60000, timeNow);
+        purgeChannelById(
+          client,
+          CHANNEL_ID_CCS_TEST,
+          THREE_MINUTES_MS,
+          timeNow,
+        );
         console.log(
-          `${fileData[SERVER_ID_APLAN].name}'s ${fileData[SERVER_ID_APLAN][CHANNEL_ID_CCS_LFG].name} channel just checked`,
+          `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].name} channel just checked`,
         );
       });
     }
   });
 }, 60000); // check every minute
-
-// const SERVER_ID_CCS = "186674984847015936";
 
 // const TEN_HOURS_MS = 36000000;
 // const CHANNEL_ID_CCS_LFG = "726588620529598577";
