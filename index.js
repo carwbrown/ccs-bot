@@ -62,6 +62,7 @@ setInterval(() => {
       fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
         if (err) throw err;
         purgeChannelById(client, CHANNEL_ID_APLAN);
+        console.log(`${fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].name} just purged`);
       });
     }
   });
