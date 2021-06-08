@@ -72,6 +72,42 @@ setInterval(() => {
   });
 }, 180000);
 
+const SERVER_ID_CCS = "186674984847015936";
+const CHANNEL_ID_CCS = "851879663503409152";
+
+setInterval(() => {
+  console.log("Hello, interval has started");
+
+  fs.readFile("./css.json", (err, data) => {
+    if (err) throw err;
+    let fileData = JSON.parse(data);
+    const timeNow = new Date().getTime();
+    if (
+      fileData[SERVER_ID_CCS][CHANNEL_ID_CCS].ttl +
+        fileData[SERVER_ID_CCS][CHANNEL_ID_CCS].lastDelete <
+      timeNow
+    ) {
+      const newFileData = {
+        ...fileData,
+        [SERVER_ID_CCS]: {
+          ...fileData[SERVER_ID_CCS],
+          [CHANNEL_ID_CCS]: {
+            ...fileData[SERVER_ID_CCS][CHANNEL_ID_CCS],
+            lastDelete: timeNow,
+          },
+        },
+      };
+      fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
+        if (err) throw err;
+        purgeChannelById(client, CHANNEL_ID_CCS);
+        console.log(
+          `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS].name} channel just purged`,
+        );
+      });
+    }
+  });
+}, 3000);
+
 // Here you can login the bot. It automatically attempts to login the bot
 // with the environment variable you set for your bot token ("DISCORD_TOKEN")
 const token = process.env.DISCORD_TOKEN;

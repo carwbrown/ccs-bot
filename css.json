@@ -10,6 +10,11 @@
       "name": "can-create-scrims",
       "ttl": 604800000,
       "lastDelete": 1620896400000
+    },
+    "851879663503409152": {
+      "name": "mesos-bot-test",
+      "ttl": 180000,
+      "lastDelete": 1620896400000
     }
   },
   "334921100582715403": {
