@@ -15,3 +15,9 @@ export function purgeChannel(client, msg) {
   clear(msg, generalObj);
   msg.author.send(`${generalChannel.name} channel has been cleaned out`);
 }
+
+export function purgeChannelById(client, channelId) {
+  const channelObj = client.channels.cache.get(channelId);
+
+  channelObj.bulkDelete(99, true);
+}

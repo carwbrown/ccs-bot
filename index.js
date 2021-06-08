@@ -1,4 +1,4 @@
-import { purgeChannel } from "./purgeChannel.js";
+import { purgeChannel, purgeChannelById } from "./purgeChannel.js";
 import { keepAlive } from "./server.js";
 import Discord from "discord.js";
 import dotenv from "dotenv";
@@ -24,30 +24,6 @@ client.on("message", (msg) => {
     purgeChannel(client, msg);
   }
 
-  setInterval(() => {
-    console.log("Hello, interval has started");
-
-    fs.readFile("./css.json", (err, data) => {
-      if (err) throw err;
-      let fileData = JSON.parse(data);
-      const timeNow = new Date().getTime();
-      console.log("fileData: ", fileData);
-      if (fileData[TEST_ID].ttl + fileData[TEST_ID].lastDelete < timeNow) {
-        const newFileData = {
-          ...fileData,
-          [TEST_ID]: {
-            ...fileData[TEST_ID],
-            lastDelete: timeNow,
-          },
-        };
-        console.log("newFileData: ", newFileData);
-        fs.writeFile("./css.json", newFileData, (err) => {
-          if (err) throw err;
-          console.log("Now, please delete me");
-        });
-      }
-    });
-  }, 3000);
 });
 
 client.on("guildMemberAdd", (member) => {
@@ -60,6 +36,36 @@ client.on("guildMemberAdd", (member) => {
   // Send the message, mentioning the member
   channel.send(`!dadjoke`);
 });
+
+
+const SERVER_ID_APLAN = '334921100582715403'
+const CHANNEL_ID_APLAN = '334921100582715403'
+
+setInterval(() => {
+  console.log("Hello, interval has started");
+
+  fs.readFile("./css.json", (err, data) => {
+    if (err) throw err;
+    let fileData = JSON.parse(data);
+    const timeNow = new Date().getTime();
+    if (fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].ttl + fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].lastDelete < timeNow) {
+      const newFileData = {
+        ...fileData,
+        [SERVER_ID_APLAN]: {
+          ...fileData[SERVER_ID_APLAN],
+          [CHANNEL_ID_APLAN]: {
+            ...fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN],
+            lastDelete: timeNow,
+          }
+        },
+      };
+      fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
+        if (err) throw err;
+        purgeChannelById(client, CHANNEL_ID_APLAN);
+      });
+    }
+  });
+}, 180000);
 
 // Here you can login the bot. It automatically attempts to login the bot
 // with the environment variable you set for your bot token ("DISCORD_TOKEN")
