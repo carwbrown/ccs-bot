@@ -23,23 +23,21 @@ client.on("message", (msg) => {
   ) {
     purgeChannel(client, msg);
   }
-
 });
 
-client.on("guildMemberAdd", (member) => {
-  // Send the message to a designated channel on a server:
-  const channel = member.guild.channels.cache.find(
-    (ch) => ch.name === "general",
-  );
-  // Do nothing if the channel wasn't found on this server
-  if (!channel) return;
-  // Send the message, mentioning the member
-  channel.send(`!dadjoke`);
-});
+// client.on("guildMemberAdd", (member) => {
+//   // Send the message to a designated channel on a server:
+//   const channel = member.guild.channels.cache.find(
+//     (ch) => ch.name === "general",
+//   );
+//   // Do nothing if the channel wasn't found on this server
+//   if (!channel) return;
+//   // Send the message, mentioning the member
+//   channel.send(`!dadjoke`);
+// });
 
-
-const SERVER_ID_APLAN = '334921100582715403'
-const CHANNEL_ID_APLAN = '334921100582715403'
+const SERVER_ID_APLAN = "334921100582715403";
+const CHANNEL_ID_APLAN = "334921100582715403";
 
 setInterval(() => {
   console.log("Hello, interval has started");
@@ -48,7 +46,11 @@ setInterval(() => {
     if (err) throw err;
     let fileData = JSON.parse(data);
     const timeNow = new Date().getTime();
-    if (fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].ttl + fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].lastDelete < timeNow) {
+    if (
+      fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].ttl +
+        fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].lastDelete <
+      timeNow
+    ) {
       const newFileData = {
         ...fileData,
         [SERVER_ID_APLAN]: {
@@ -56,13 +58,15 @@ setInterval(() => {
           [CHANNEL_ID_APLAN]: {
             ...fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN],
             lastDelete: timeNow,
-          }
+          },
         },
       };
       fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
         if (err) throw err;
         purgeChannelById(client, CHANNEL_ID_APLAN);
-        console.log(`${fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].name} just purged`);
+        console.log(
+          `${fileData[SERVER_ID_APLAN].name}'s ${fileData[SERVER_ID_APLAN][CHANNEL_ID_APLAN].name} channel just purged`,
+        );
       });
     }
   });
