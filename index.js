@@ -1,4 +1,5 @@
 import { purgeChannel } from "./purgeChannel.js";
+import { keepAlive } from "./server.js";
 import Discord from "discord.js";
 import dotenv from "dotenv";
 import fs from "fs";
@@ -63,4 +64,5 @@ client.on("guildMemberAdd", (member) => {
 // Here you can login the bot. It automatically attempts to login the bot
 // with the environment variable you set for your bot token ("DISCORD_TOKEN")
 const token = process.env.DISCORD_TOKEN;
+keepAlive();
 client.login(token);
