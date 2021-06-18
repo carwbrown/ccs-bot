@@ -1,9 +1,4 @@
-import {
-  SERVER_ID_CCS,
-  CHANNEL_ID_CCS_TEST,
-  CHANNEL_ID_CCS_LFG,
-  CHANNEL_ID_CCS_SCRIM,
-} from "./index.js";
+import { SERVER_ID_CCS } from "./index.js";
 import fs from "fs";
 
 async function clear(msg, generalChannel) {
