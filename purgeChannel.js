@@ -1,4 +1,9 @@
-import { SERVER_ID_CCS, CHANNEL_ID_CCS_TEST, CHANNEL_ID_CCS_LFG, CHANNEL_ID_CCS_SCRIM } from './index';
+import {
+  SERVER_ID_CCS,
+  CHANNEL_ID_CCS_TEST,
+  CHANNEL_ID_CCS_LFG,
+  CHANNEL_ID_CCS_SCRIM,
+} from "./index";
 
 async function clear(msg, generalChannel) {
   msg.delete();
@@ -25,7 +30,7 @@ export async function purgeChannelById(client, channelId, ttlMsg, timeNow) {
 
   for (let value of messages.values()) {
     if (value.createdTimestamp + ttlMsg < timeNow) {
-      channelObj.messages.delete(value.id)
+      channelObj.messages.delete(value.id);
     }
   }
 }
@@ -34,14 +39,13 @@ export async function purgeChannelOnOff(msg, turnOn) {
   fs.readFile("./css.json", (err, data) => {
     if (err) throw err;
     let fileData = JSON.parse(data);
-    const timeNow = new Date().getTime();
 
     const newFileData = {
       ...fileData,
       [SERVER_ID_CCS]: {
         ...fileData[SERVER_ID_CCS],
-        on: turnOn.
-      }
+        on: turnOn,
+      },
     };
     fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
       if (err) throw err;
@@ -50,5 +54,5 @@ export async function purgeChannelOnOff(msg, turnOn) {
       );
     });
   });
-  msg.reply(`Automatic delete: ${turnOn ? 'on' : 'off'}`);
+  msg.reply(`Automatic delete: ${turnOn ? "on" : "off"}`);
 }
