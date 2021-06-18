@@ -1,3 +1,5 @@
+import { SERVER_ID_CCS, CHANNEL_ID_CCS_TEST, CHANNEL_ID_CCS_LFG, CHANNEL_ID_CCS_SCRIM } from './index';
+
 async function clear(msg, generalChannel) {
   msg.delete();
   generalChannel.bulkDelete(99, true);
@@ -22,8 +24,31 @@ export async function purgeChannelById(client, channelId, ttlMsg, timeNow) {
   const messages = await channelObj.messages.fetch();
 
   for (let value of messages.values()) {
-    if(value.createdTimestamp + ttlMsg < timeNow){
+    if (value.createdTimestamp + ttlMsg < timeNow) {
       channelObj.messages.delete(value.id)
     }
   }
+}
+
+export async function purgeChannelOnOff(msg, turnOn) {
+  fs.readFile("./css.json", (err, data) => {
+    if (err) throw err;
+    let fileData = JSON.parse(data);
+    const timeNow = new Date().getTime();
+
+    const newFileData = {
+      ...fileData,
+      [SERVER_ID_CCS]: {
+        ...fileData[SERVER_ID_CCS],
+        on: turnOn.
+      }
+    };
+    fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
+      if (err) throw err;
+      console.log(
+        `${fileData[SERVER_ID_CCS].name}'s automatic delete: ${turnOn}`,
+      );
+    });
+  });
+  msg.reply(`Automatic delete: ${turnOn ? 'on' : 'off'}`);
 }
