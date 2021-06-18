@@ -24,8 +24,7 @@ client.on("message", (msg) => {
     purgeChannel(client, msg);
   }
   if (
-    (msg.content.startsWith("!ccs-delete-off") || msg.content.startsWith("!ccs-delete-on")) &&
-    msg.member.hasPermission("ADMINISTRATOR")
+    (msg.content.startsWith("!ccs-delete-off") || msg.content.startsWith("!ccs-delete-on")) && msg.member.hasPermission("ADMINISTRATOR")
   ) {
     const turnOn = msg.content.startsWith("!ccs-delete-on");
     purgeChannelOnOff(msg, turnOn);
@@ -46,45 +45,45 @@ const FOURTEEN_DAYS_MS = 1209600000;
 // test bot channel
 // ******************************
 
-setInterval(() => {
-  console.log("Hello, aplan interval has started");
+// setInterval(() => {
+//   console.log("Hello, aplan interval has started");
 
-  fs.readFile("./css.json", (err, data) => {
-    if (err) throw err;
-    let fileData = JSON.parse(data);
-    const timeNow = new Date().getTime();
-    if (
-      fileData[SERVER_ID_CCS].on && fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].ttl +
-        fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].lastDelete <
-      timeNow
-    ) {
-      const newFileData = {
-        ...fileData,
-        [SERVER_ID_CCS]: {
-          ...fileData[SERVER_ID_CCS],
-          [CHANNEL_ID_CCS_TEST]: {
-            ...fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST],
-            lastDelete:
-              fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].ttl +
-              fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].lastDelete,
-          },
-        },
-      };
-      fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
-        if (err) throw err;
-        purgeChannelById(
-          client,
-          CHANNEL_ID_CCS_TEST,
-          THREE_MINUTES_MS,
-          timeNow,
-        );
-        console.log(
-          `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].name} channel just checked`,
-        );
-      });
-    }
-  });
-}, 60000); // check every minute
+//   fs.readFile("./css.json", (err, data) => {
+//     if (err) throw err;
+//     let fileData = JSON.parse(data);
+//     const timeNow = new Date().getTime();
+//     if (
+//      false && fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].ttl +
+//       fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].lastDelete <
+//       timeNow
+//     ) {
+//       const newFileData = {
+//         ...fileData,
+//         [SERVER_ID_CCS]: {
+//           ...fileData[SERVER_ID_CCS],
+//           [CHANNEL_ID_CCS_TEST]: {
+//             ...fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST],
+//             lastDelete:
+//               fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].ttl +
+//               fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].lastDelete,
+//           },
+//         },
+//       };
+//       fs.writeFile("./css.json", JSON.stringify(newFileData), (err) => {
+//         if (err) throw err;
+//         purgeChannelById(
+//           client,
+//           CHANNEL_ID_CCS_TEST,
+//           THREE_MINUTES_MS,
+//           timeNow,
+//         );
+//         console.log(
+//           `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].name} channel just checked`,
+//         );
+//       });
+//     }
+//   });
+// }, 30000); // check every minute
 
 
 // ******************************
@@ -98,10 +97,9 @@ setInterval(() => {
     if (err) throw err;
     let fileData = JSON.parse(data);
     const timeNow = new Date().getTime();
-    // !!!! off for now !!!!
     if (
-      false && fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl +
-        fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].lastDelete <
+       fileData[SERVER_ID_CCS].on && fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl +
+      fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].lastDelete <
       timeNow
     ) {
       const newFileData = {
@@ -141,7 +139,7 @@ setInterval(() => {
     // !!!! off for now !!!
     if (
       false && fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].ttl +
-        fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].lastDelete <
+      fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].lastDelete <
       timeNow
     ) {
       const newFileData = {

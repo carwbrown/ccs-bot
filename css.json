@@ -1,22 +1,21 @@
 {
   "186674984847015936": {
     "name": "CCS",
-    "on": false,
+    "on": true,
     "726588620529598577": {
       "name": "looking-for-group",
       "ttl": 18000000,
-      "lastDelete": 1623236400000,
+      "lastDelete": 1623236400000
     },
     "675808497988009986": {
       "name": "can-create-scrims",
       "ttl": 604800000,
-      "lastDelete": 1623668400000,
-      
+      "lastDelete": 1623668400000
     },
     "851879663503409152": {
       "name": "mesos-bot-test",
       "ttl": 180000,
-      "lastDelete": 1620959760000,
+      "lastDelete": 1620960300000
     }
   },
   "334921100582715403": {

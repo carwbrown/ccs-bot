@@ -3,7 +3,8 @@ import {
   CHANNEL_ID_CCS_TEST,
   CHANNEL_ID_CCS_LFG,
   CHANNEL_ID_CCS_SCRIM,
-} from "./index";
+} from "./index.js";
+import fs from "fs";
 
 async function clear(msg, generalChannel) {
   msg.delete();
