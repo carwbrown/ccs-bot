@@ -30,7 +30,7 @@ client.on("message", (msg) => {
   if (
     (msg.content.startsWith("!ccs-delete-off") ||
       msg.content.startsWith("!ccs-delete-on")) &&
-    msg.member.hasPermission("ADMINISTRATOR")
+    (msg.member.hasPermission("ADMINISTRATOR") || msg.member.user.id === 140115046188580865)
   ) {
     const turnOn = msg.content.startsWith("!ccs-delete-on");
     purgeChannelOnOff(msg, turnOn);
@@ -47,13 +47,15 @@ const CHANNEL_ID_CCS_SCRIM = "675808497988009986";
 // ******************************
 
 setInterval(() => {
-  console.log("Hello, aplan interval has started");
+  console.log("Hello, mesos-bot-test interval has started");
 
   fs.readFile("./css.json", (err, data) => {
     if (err) throw err;
     let fileData = JSON.parse(data);
     const timeNow = new Date().getTime();
-    if (fileData[SERVER_ID_CCS].on) {
+    // fileData[SERVER_ID_CCS].on
+
+    if (false) {
       purgeChannelById(
         client,
         CHANNEL_ID_CCS_TEST,
@@ -78,6 +80,7 @@ setInterval(() => {
     if (err) throw err;
     let fileData = JSON.parse(data);
     const timeNow = new Date().getTime();
+    // fileData[SERVER_ID_CCS].on
     if (fileData[SERVER_ID_CCS].on) {
       purgeChannelById(
         client,
@@ -104,6 +107,8 @@ setInterval(() => {
     let fileData = JSON.parse(data);
     const timeNow = new Date().getTime();
     // !!!! off for now !!!
+    // fileData[SERVER_ID_CCS].on
+
     if (false) {
       purgeChannelById(
         client,
