@@ -73,14 +73,14 @@ setInterval(() => {
         CHANNEL_ID_CCS_TEST,
         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].ttl,
         timeNow,
-        "", // permanentMessageId
+        "855544406152445953", // permanentMessageId
       );
       console.log(
         `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].name} channel just checked`,
       );
     }
   });
-}, 6000000); // check every minute
+}, 60000); // check every minute
 
 // ******************************
 // * LFG CCS channel
