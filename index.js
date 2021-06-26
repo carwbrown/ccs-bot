@@ -2,7 +2,7 @@ import {
   purgeChannel,
   purgeChannelById,
   purgeChannelOnOff,
-  purgeChannelStatus
+  purgeChannelStatus,
 } from "./purgeChannel.js";
 import { keepAlive } from "./server.js";
 import Discord from "discord.js";
@@ -22,7 +22,7 @@ client.on("message", (msg) => {
   if (msg.content === "!ping") {
     msg.reply("Pong! test");
   }
-  
+
   if (
     msg.content.startsWith("!purge") &&
     msg.member.hasPermission("ADMINISTRATOR")
@@ -33,7 +33,8 @@ client.on("message", (msg) => {
   if (
     (msg.content.startsWith("!ccs-delete-off") ||
       msg.content.startsWith("!ccs-delete-on")) &&
-    (msg.member.hasPermission("ADMINISTRATOR") || msg.member.user.id === "140115046188580865")
+    (msg.member.hasPermission("ADMINISTRATOR") ||
+      msg.member.user.id === "140115046188580865")
   ) {
     const turnOn = msg.content.startsWith("!ccs-delete-on");
     purgeChannelOnOff(msg, turnOn);
@@ -41,7 +42,8 @@ client.on("message", (msg) => {
 
   if (
     msg.content.startsWith("!ccs-delete-status") &&
-    (msg.member.hasPermission("ADMINISTRATOR") || msg.member.user.id === "140115046188580865")
+    (msg.member.hasPermission("ADMINISTRATOR") ||
+      msg.member.user.id === "140115046188580865")
   ) {
     purgeChannelStatus(msg);
   }
@@ -71,6 +73,7 @@ setInterval(() => {
         CHANNEL_ID_CCS_TEST,
         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].ttl,
         timeNow,
+        "", // permanentMessageId
       );
       console.log(
         `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].name} channel just checked`,
@@ -97,6 +100,7 @@ setInterval(() => {
         CHANNEL_ID_CCS_LFG,
         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl,
         timeNow,
+        "", // permanentMessageId
       );
       console.log(
         `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].name} channel just checked`,
@@ -125,6 +129,7 @@ setInterval(() => {
         CHANNEL_ID_CCS_SCRIM,
         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].ttl,
         timeNow,
+        "", // permanentMessageId
       );
       console.log(
         `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].name} channel just checked`,

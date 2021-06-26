@@ -19,13 +19,22 @@ export function purgeChannel(client, msg) {
   msg.author.send(`${generalChannel.name} channel has been cleaned out`);
 }
 
-export async function purgeChannelById(client, channelId, ttlMsg, timeNow) {
+export async function purgeChannelById(
+  client,
+  channelId,
+  ttlMsg,
+  timeNow,
+  permanentMessageId,
+) {
   const channelObj = client.channels.cache.get(channelId);
 
   const messages = await channelObj.messages.fetch();
 
   for (let value of messages.values()) {
-    if (value.createdTimestamp + ttlMsg < timeNow) {
+    if (
+      value.createdTimestamp + ttlMsg < timeNow &&
+      permanentMessageId !== value.id
+    ) {
       channelObj.messages.delete(value.id);
     }
   }
@@ -57,6 +66,10 @@ export async function purgeChannelStatus(msg) {
   fs.readFile("./css.json", (err, data) => {
     if (err) throw err;
     let fileData = JSON.parse(data);
-    msg.reply(`Automatic delete is currently ${fileData[SERVER_ID_CCS].on ? "on" : "off"}`);
+    msg.reply(
+      `Automatic delete is currently ${
+        fileData[SERVER_ID_CCS].on ? "on" : "off"
+      }`,
+    );
   });
 }
