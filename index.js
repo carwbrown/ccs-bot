@@ -2,6 +2,7 @@ import {
   purgeChannel,
   purgeChannelById,
   purgeChannelOnOff,
+  purgeChannelStatus
 } from "./purgeChannel.js";
 import { keepAlive } from "./server.js";
 import Discord from "discord.js";
@@ -21,19 +22,28 @@ client.on("message", (msg) => {
   if (msg.content === "!ping") {
     msg.reply("Pong! test");
   }
+  
   if (
     msg.content.startsWith("!purge") &&
     msg.member.hasPermission("ADMINISTRATOR")
   ) {
     purgeChannel(client, msg);
   }
+
   if (
     (msg.content.startsWith("!ccs-delete-off") ||
       msg.content.startsWith("!ccs-delete-on")) &&
-    (msg.member.hasPermission("ADMINISTRATOR") || msg.member.user.id === 140115046188580865)
+    (msg.member.hasPermission("ADMINISTRATOR") || msg.member.user.id === "140115046188580865")
   ) {
     const turnOn = msg.content.startsWith("!ccs-delete-on");
     purgeChannelOnOff(msg, turnOn);
+  }
+
+  if (
+    msg.content.startsWith("!ccs-delete-status") &&
+    (msg.member.hasPermission("ADMINISTRATOR") || msg.member.user.id === "140115046188580865")
+  ) {
+    purgeChannelStatus(msg);
   }
 });
 
@@ -67,7 +77,7 @@ setInterval(() => {
       );
     }
   });
-}, 30000); // check every minute
+}, 6000000); // check every minute
 
 // ******************************
 // * LFG CCS channel

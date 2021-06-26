@@ -52,3 +52,11 @@ export async function purgeChannelOnOff(msg, turnOn) {
   });
   msg.reply(`Automatic delete: ${turnOn ? "on" : "off"}`);
 }
+
+export async function purgeChannelStatus(msg) {
+  fs.readFile("./css.json", (err, data) => {
+    if (err) throw err;
+    let fileData = JSON.parse(data);
+    msg.reply(`Automatic delete is currently ${fileData[SERVER_ID_CCS].on ? "on" : "off"}`);
+  });
+}
