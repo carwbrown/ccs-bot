@@ -80,7 +80,7 @@ setInterval(() => {
       );
     }
   });
-}, 60000); // check every minute
+}, 6000000); // check every 100 minutes
 
 // ******************************
 // * LFG CCS channel
@@ -123,13 +123,13 @@ setInterval(() => {
     // !!!! off for now !!!
     // fileData[SERVER_ID_CCS].on
 
-    if (false) {
+    if (fileData[SERVER_ID_CCS].on) {
       purgeChannelById(
         client,
         CHANNEL_ID_CCS_SCRIM,
         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].ttl,
         timeNow,
-        "", // permanentMessageId
+        "858394992182427670",
       );
       console.log(
         `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].name} channel just checked`,
