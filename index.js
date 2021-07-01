@@ -100,7 +100,7 @@ setInterval(() => {
         CHANNEL_ID_CCS_LFG,
         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].ttl,
         timeNow,
-        "", // permanentMessageId
+        "860249299354255400", // permanentMessageId
       );
       console.log(
         `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].name} channel just checked`,
