@@ -27,6 +27,7 @@ const clientSecret = process.env.TW_SECRET;
 const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
 const apiClient = new ApiClient({ authProvider });
 
+/*
 try {
   const listener = new WebHookListener(
     apiClient,
@@ -40,7 +41,7 @@ try {
   // https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
   const RAKA = 479927329;
   // we need to track the previous status of the stream because there are other state changes than the live/offline switch
-  let prevStream = await apiClient.helix.streams.getStreamByUserId(userId);
+  let prevStream = await apiClient.helix.streams.getStreamByUserId(RAKA);
 
   await listener.subscribeToStreamChanges(RAKA, async (stream) => {
     if (stream) {
@@ -59,7 +60,7 @@ try {
 } catch (err) {
   console.log("twitch err: ", err);
 }
-
+*/
 client.on("message", (msg) => {
   if (msg.content === "!ping") {
     msg.reply("Pong! test");
