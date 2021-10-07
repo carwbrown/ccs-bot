@@ -8,9 +8,6 @@ import { keepAlive } from "./server.js";
 import Discord from "discord.js";
 import dotenv from "dotenv";
 import fs from "fs";
-import { ApiClient } from "twitch";
-import { ClientCredentialsAuthProvider } from "twitch-auth";
-import { SimpleAdapter, WebHookListener } from "twitch-webhooks";
 
 // Importing this allows you to access the environment variables of the running node process
 dotenv.config();
@@ -21,46 +18,6 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-const clientId = process.env.TW_CLIENT_ID;
-const clientSecret = process.env.TW_SECRET;
-
-const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
-const apiClient = new ApiClient({ authProvider });
-
-/*
-try {
-  const listener = new WebHookListener(
-    apiClient,
-    new SimpleAdapter({
-      hostName: "https://ccs-bot.mesostables.repl.co",
-      listenerPort: 3000,
-    }),
-  );
-  await listener.listen();
-
-  // https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
-  const RAKA = 479927329;
-  // we need to track the previous status of the stream because there are other state changes than the live/offline switch
-  let prevStream = await apiClient.helix.streams.getStreamByUserId(RAKA);
-
-  await listener.subscribeToStreamChanges(RAKA, async (stream) => {
-    if (stream) {
-      if (!prevStream) {
-        console.log(
-          `${stream.userDisplayName} just went live with title: ${stream.title}`,
-        );
-      }
-    } else {
-      // no stream, no display name
-      const user = await apiClient.helix.users.getUserById(RAKA);
-      console.log(`${user.displayName} just went offline`);
-    }
-    prevStream = stream ?? null;
-  });
-} catch (err) {
-  console.log("twitch err: ", err);
-}
-*/
 client.on("message", (msg) => {
   if (msg.content === "!ping") {
     msg.reply("Pong! test");

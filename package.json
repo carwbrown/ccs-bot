@@ -12,13 +12,13 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "@twurple/api": "^5.0.5",
+    "@twurple/auth": "^5.0.5",
+    "@twurple/eventsub": "^5.0.5",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "fs": "0.0.1-security",
-    "twitch": "^4.6.7",
-    "twitch-auth": "^4.6.7",
-    "twitch-webhooks": "^4.6.7"
+    "fs": "0.0.1-security"
   },
   "author": "",
   "license": "ISC"
