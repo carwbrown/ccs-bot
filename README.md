@@ -10,7 +10,7 @@ A discord bot for the CCS discord channel. Original functionality is to create a
 
 - node.js
 - discord.js
-- runs on a public repl.it node server https://replit.com/@mesostables/ccs-bo
+- runs on a public repl.it node server https://replit.com/@mesostables/ccs-bot
 
 ## TODO
 
