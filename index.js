@@ -12,7 +12,7 @@ import fs from "fs";
 // Importing this allows you to access the environment variables of the running node process
 dotenv.config();
 
-const client = new Discord.Client();
+export const client = new Discord.Client();
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);

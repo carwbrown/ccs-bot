@@ -27,16 +27,19 @@ export async function purgeChannelById(
   permanentMessageId,
 ) {
   const channelObj = client.channels.cache.get(channelId);
+  try {
+    const messages = await channelObj.messages.fetch();
 
-  const messages = await channelObj.messages.fetch();
-
-  for (let value of messages.values()) {
-    if (
-      value.createdTimestamp + ttlMsg < timeNow &&
-      permanentMessageId !== value.id
-    ) {
-      channelObj.messages.delete(value.id);
+    for (let value of messages.values()) {
+      if (
+        value.createdTimestamp + ttlMsg < timeNow &&
+        permanentMessageId !== value.id
+      ) {
+        channelObj.messages.delete(value.id);
+      }
     }
+  } catch (err) {
+    console.log('err: ', err)
   }
 }
 
@@ -68,7 +71,7 @@ export async function purgeChannelStatus(msg) {
     let fileData = JSON.parse(data);
     msg.reply(
       `Automatic delete is currently ${
-        fileData[SERVER_ID_CCS].on ? "on" : "off"
+      fileData[SERVER_ID_CCS].on ? "on" : "off"
       }`,
     );
   });

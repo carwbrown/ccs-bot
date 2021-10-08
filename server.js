@@ -1,6 +1,8 @@
 import express from "express";
 import { ClientCredentialsAuthProvider } from "@twurple/auth";
 import { ApiClient } from "@twurple/api";
+import { EventSubMiddleware } from '@twurple/eventsub';
+import { client as discordClient } from './index.js'
 
 const server = express();
 server.all("/", (req, res) => {
@@ -15,6 +17,9 @@ export function keepAlive() {
 
 // https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
 const RAKA = 479927329;
+const VALK = 141728236;
+const KRUSH = 137355398;
+const BRAINER = 59023461;
 
 const clientId = process.env.TW_CLIENT_ID;
 const clientSecret = process.env.TW_SECRET;
@@ -28,12 +33,52 @@ const middleware = new EventSubMiddleware({
   pathPrefix: "/twitch",
   secret: process.env.TW_CWB_SECRET,
 });
-
-await middleware.apply(server);
+try {
+  await middleware.apply(server);
+} catch (err) {
+  console.log('apply middleware error: ', err)
+}
 server.listen(3001, async () => {
-  await middleware.markAsReady();
-  await middleware.subscribeToStreamOnlineEvents(RAKA, (event) => {
-    console.log(`${event.broadcasterDisplayName} just went live!`);
-    console.log("event: ", event);
-  });
+  try {
+    await middleware.markAsReady();
+
+    discordClient.on("ready", async () => {
+      const channel = await discordClient.channels.fetch('714675982442692661');
+
+      await middleware.subscribeToStreamOnlineEvents(VALK, (event) => {
+        console.log(`${event.broadcasterDisplayName} just went live!`);
+        channel.send('CCS broadcasting presents… Valkamer! https://www.twitch.tv/valkamer1366');
+      });
+    });
+
+    discordClient.on("ready", async () => {
+      const channel = await discordClient.channels.fetch('714675982442692661');
+
+      await middleware.subscribeToStreamOnlineEvents(KRUSH, (event) => {
+        console.log(`${event.broadcasterDisplayName} just went live!`);
+        channel.send('The smooth stylings of TheKrushinator are live https://www.twitch.tv/thekrushinator');
+      });
+    });
+
+    discordClient.on("ready", async () => {
+      const channel = await discordClient.channels.fetch('714675982442692661');
+
+      await middleware.subscribeToStreamOnlineEvents(BRAINER, (event) => {
+        console.log(`${event.broadcasterDisplayName} just went live!`);
+        channel.send('Get in here! Brainer is live! https://www.twitch.tv/brainer1023');
+      });
+    });
+
+    discordClient.on("ready", async () => {
+      const channel = await discordClient.channels.fetch('714675982442692661');
+
+      await middleware.subscribeToStreamOnlineEvents(RAKA, (event) => {
+        console.log(`${event.broadcasterDisplayName} just went live!`);
+        channel.send('Hype! Raka is live https://www.twitch.tv/irakaf');
+      });
+    });
+
+  } catch (err) {
+    console.log('listening error: ', err)
+  }
 });
