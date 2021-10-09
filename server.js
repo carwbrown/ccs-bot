@@ -31,13 +31,15 @@ const middleware = new EventSubMiddleware({
   apiClient,
   hostName: "ccs-bot.mesostables.repl.co",
   pathPrefix: "/twitch",
-  secret: process.env.TW_CWB_SECRET,
+  secret: `${process.env.TW_CWB_SECRET}${Date.now()}`,
 });
+
 try {
   await middleware.apply(server);
 } catch (err) {
   console.log('apply middleware error: ', err)
 }
+
 server.listen(3001, async () => {
   try {
     await middleware.markAsReady();
@@ -74,7 +76,7 @@ server.listen(3001, async () => {
 
       await middleware.subscribeToStreamOnlineEvents(RAKA, (event) => {
         console.log(`${event.broadcasterDisplayName} just went live!`);
-        channel.send('Hype! Raka is live https://www.twitch.tv/irakaf');
+        channel.send(`Hype! ${event.broadcasterDisplayName} is live. "${event.getStream().title || ''}" https://www.twitch.tv/${event.broadcasterName}`);
       });
     });
 
