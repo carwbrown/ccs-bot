@@ -53,7 +53,7 @@ server.listen(3001, async () => {
       );
 
       await Promise.all(
-        streamers.map((streamer) => {
+        streamers.map(async (streamer) => {
           const onlineSub = await middleware.subscribeToStreamOnlineEvents(
             streamer,
             (event) => {
