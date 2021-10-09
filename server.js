@@ -90,7 +90,5 @@ function shutDown() {
     debug("HTTP server closed");
   });
 
-  if (twitchEventListeners && twitchEventListeners.length > 0) {
-    streamListenersMap.forEach((value) => await value.stop());
-  }
+  streamListenersMap.forEach((value) => await value.stop());
 }
