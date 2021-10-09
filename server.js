@@ -47,37 +47,45 @@ server.listen(3001, async () => {
     discordClient.on("ready", async () => {
       const channel = await discordClient.channels.fetch('714675982442692661');
 
-      await middleware.subscribeToStreamOnlineEvents(VALK, (event) => {
+      const onlineSub = await middleware.subscribeToStreamOnlineEvents(VALK, (event) => {
         console.log(`${event.broadcasterDisplayName} just went live!`);
         channel.send('CCS broadcasting presents… Valkamer! https://www.twitch.tv/valkamer1366');
       });
+      await onlineSub.stop();
+
     });
 
     discordClient.on("ready", async () => {
       const channel = await discordClient.channels.fetch('714675982442692661');
 
-      await middleware.subscribeToStreamOnlineEvents(KRUSH, (event) => {
+      const onlineSub = await middleware.subscribeToStreamOnlineEvents(KRUSH, (event) => {
         console.log(`${event.broadcasterDisplayName} just went live!`);
         channel.send('The smooth stylings of TheKrushinator are live https://www.twitch.tv/thekrushinator');
       });
+      await onlineSub.stop();
+
     });
 
     discordClient.on("ready", async () => {
       const channel = await discordClient.channels.fetch('714675982442692661');
 
-      await middleware.subscribeToStreamOnlineEvents(BRAINER, (event) => {
+      const onlineSub = await middleware.subscribeToStreamOnlineEvents(BRAINER, (event) => {
         console.log(`${event.broadcasterDisplayName} just went live!`);
         channel.send('Get in here! Brainer is live! https://www.twitch.tv/brainer1023');
       });
+      await onlineSub.stop();
+
     });
 
     discordClient.on("ready", async () => {
       const channel = await discordClient.channels.fetch('714675982442692661');
 
-      await middleware.subscribeToStreamOnlineEvents(RAKA, (event) => {
+      const onlineSub = await middleware.subscribeToStreamOnlineEvents(RAKA, (event) => {
         console.log(`${event.broadcasterDisplayName} just went live!`);
         channel.send(`Hype! ${event.broadcasterDisplayName} is live. "${event.getStream().title || ''}" https://www.twitch.tv/${event.broadcasterName}`);
       });
+
+      await onlineSub.stop();
     });
 
   } catch (err) {
