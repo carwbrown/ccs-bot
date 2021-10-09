@@ -40,7 +40,7 @@ try {
   console.log("apply middleware error: ", err);
 }
 
-const twitchEventListeners = [];
+const streamListenersMap = new Map();
 const castingCaptivatingStreamsId = "714675982442692661";
 
 // https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
@@ -54,27 +54,28 @@ server.listen(3001, async () => {
   try {
     await middleware.markAsReady();
     discordClient.on("ready", async () => {
-      const streamListeners = streamers.map((streamer) => {
-        const channel = await discordClient.channels.fetch(
-          castingCaptivatingStreamsId,
-        );
+      const channel = await discordClient.channels.fetch(
+        castingCaptivatingStreamsId,
+      );
 
-        const onlineSub = await middleware.subscribeToStreamOnlineEvents(
-          streamer,
-          (event) => {
-            console.log(`${event.broadcasterDisplayName} just went live!`);
-            channel.send(
-              `Hype! ${event.broadcasterDisplayName} is live. "${
-                event.getStream().title || ""
-              }" https://www.twitch.tv/${event.broadcasterName}`,
-            );
-          },
-        );
+      await Promise.all(
+        streamers.map((streamer) => {
+          const onlineSub = await middleware.subscribeToStreamOnlineEvents(
+            streamer,
+            (event) => {
+              console.log(`${event.broadcasterDisplayName} just went live!`);
+              channel.send(
+                `Hype! ${event.broadcasterDisplayName} is live. "${
+                  event.getStream().title || ""
+                }" https://www.twitch.tv/${event.broadcasterName}`,
+              );
+            },
+          );
 
-        twitchEventListeners.push(onlineSub);
-        return onlineSub;
-      });
-      await Promise.all(streamListeners);
+          streamListenersMap.set(streamer, onlineSub);
+          return onlineSub;
+        }),
+      );
     });
   } catch (err) {
     console.log("listening error: ", err);
@@ -90,10 +91,6 @@ function shutDown() {
   });
 
   if (twitchEventListeners && twitchEventListeners.length > 0) {
-    await Promise.all(
-      twitchEventListeners.map((twitchEventListener) =>
-        twitchEventListener.stop(),
-      ),
-    );
+    streamListenersMap.forEach((value) => await value.stop());
   }
 }
