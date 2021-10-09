@@ -15,12 +15,6 @@ export function keepAlive() {
   });
 }
 
-// https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
-const RAKA = 479927329;
-const VALK = 141728236;
-const KRUSH = 137355398;
-const BRAINER = 59023461;
-
 const clientId = process.env.TW_CLIENT_ID;
 const clientSecret = process.env.TW_SECRET;
 
