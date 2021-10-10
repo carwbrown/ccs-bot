@@ -34,7 +34,6 @@ try {
   console.log("apply middleware error: ", err);
 }
 
-const streamListenersMap = new Map();
 const castingCaptivatingStreamsId = "714675982442692661";
 
 // https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
@@ -44,45 +43,56 @@ const KRUSH = 137355398;
 const BRAINER = 59023461;
 const streamers = [RAKA, VALK, KRUSH, BRAINER];
 
+const clientReady = new Promise((resolve, reject) => {
+  discordClient.on("ready", async () => {
+    resolve();
+  });
+});
+
+const subscribeStreamSubs = async () => {
+  await clientReady;
+  const channel = await discordClient.channels.fetch(
+    castingCaptivatingStreamsId,
+  );
+
+  return await Promise.all(
+    streamers.map((streamer) => {
+      const onlineSub = middleware.subscribeToStreamOnlineEvents(
+        streamer,
+        (event) => {
+          console.log(`${event.broadcasterDisplayName} just went live!`);
+          channel.send(
+            `Hype! ${event.broadcasterDisplayName} is live. "${
+              event.getStream().title || ""
+            }" https://www.twitch.tv/${event.broadcasterName}`,
+          );
+        },
+      );
+
+      return onlineSub;
+    }),
+  );
+};
+
+const streamSubs = subscribeStreamSubs();
+
 server.listen(3001, async () => {
   try {
     await middleware.markAsReady();
-    discordClient.on("ready", async () => {
-      const channel = await discordClient.channels.fetch(
-        castingCaptivatingStreamsId,
-      );
-
-      await Promise.all(
-        streamers.map(async (streamer) => {
-          const onlineSub = await middleware.subscribeToStreamOnlineEvents(
-            streamer,
-            (event) => {
-              console.log(`${event.broadcasterDisplayName} just went live!`);
-              channel.send(
-                `Hype! ${event.broadcasterDisplayName} is live. "${
-                  event.getStream().title || ""
-                }" https://www.twitch.tv/${event.broadcasterName}`,
-              );
-            },
-          );
-
-          streamListenersMap.set(streamer, onlineSub);
-          return onlineSub;
-        }),
-      );
-    });
   } catch (err) {
-    console.log("listening error: ", err);
+    console.log("applying middleware error: ", err);
   }
 });
-
-process.on("SIGTERM", shutDown);
-process.on("SIGINT", shutDown);
 
 function shutDown() {
   server.close(() => {
     debug("HTTP server closed");
   });
 
-  streamListenersMap.forEach((value) => await value.stop());
+  streamSubs.then((subscriptions) => {
+    subscriptions.forEach((subscription) => await subscription.stop());
+  });
 }
+
+process.on("SIGTERM", shutDown);
+process.on("SIGINT", shutDown);
