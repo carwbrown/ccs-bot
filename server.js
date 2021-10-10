@@ -35,7 +35,6 @@ try {
 }
 
 const castingCaptivatingStreamsId = "714675982442692661";
-
 // https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
 const RAKA = 479927329;
 const VALK = 141728236;
@@ -43,55 +42,39 @@ const KRUSH = 137355398;
 const BRAINER = 59023461;
 const streamers = [RAKA, VALK, KRUSH, BRAINER];
 
-const clientReady = new Promise((resolve, reject) => {
-  discordClient.on("ready", async () => {
-    resolve();
-  });
-});
-
-const subscribeStreamSubs = async () => {
-  await clientReady;
-  const channel = await discordClient.channels.fetch(
-    castingCaptivatingStreamsId,
-  );
-
-  return await Promise.all(
-    streamers.map((streamer) => {
-      const onlineSub = middleware.subscribeToStreamOnlineEvents(
-        streamer,
-        (event) => {
-          console.log(`${event.broadcasterDisplayName} just went live!`);
-          channel.send(
-            `Hype! ${event.broadcasterDisplayName} is live. "${
-              event.getStream().title || ""
-            }" https://www.twitch.tv/${event.broadcasterName}`,
-          );
-        },
-      );
-
-      return onlineSub;
-    }),
-  );
-};
-
-const streamSubs = subscribeStreamSubs();
+let streamSubs = []
 
 server.listen(3001, async () => {
   try {
     await middleware.markAsReady();
+    discordClient.on("ready", async () => {
+      const channel = await discordClient.channels.fetch(
+        castingCaptivatingStreamsId,
+      );
+
+      streamSubs = await Promise.all(
+        streamers.map(async (streamer) => {
+          return await middleware.subscribeToStreamOnlineEvents(
+            streamer,
+            (event) => {
+              console.log(`${event.broadcasterDisplayName} just went live!`);
+              channel.send(
+                `Hype! ${event.broadcasterDisplayName} is live. "${
+                event.getStream().title || ""
+                }" https://www.twitch.tv/${event.broadcasterName}`,
+              );
+            },
+          );
+        }),
+      );
+    });
   } catch (err) {
-    console.log("applying middleware error: ", err);
+    console.log("listening error: ", err);
   }
 });
 
 function shutDown() {
-  server.close(() => {
-    debug("HTTP server closed");
-  });
-
-  streamSubs.then((subscriptions) => {
-    subscriptions.forEach((subscription) => await subscription.stop());
-  });
+  streamSubs.forEach(async (sub) => await sub.stop());
 }
 
 process.on("SIGTERM", shutDown);
