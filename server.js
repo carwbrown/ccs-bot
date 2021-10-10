@@ -42,7 +42,7 @@ const KRUSH = 137355398;
 const BRAINER = 59023461;
 const streamers = [RAKA, VALK, KRUSH, BRAINER];
 
-let streamSubs = []
+const streamSubs = []
 
 server.listen(3001, async () => {
   try {
@@ -52,21 +52,20 @@ server.listen(3001, async () => {
         castingCaptivatingStreamsId,
       );
 
-      streamSubs = await Promise.all(
-        streamers.map(async (streamer) => {
-          return await middleware.subscribeToStreamOnlineEvents(
-            streamer,
-            (event) => {
-              console.log(`${event.broadcasterDisplayName} just went live!`);
-              channel.send(
-                `Hype! ${event.broadcasterDisplayName} is live. "${
-                event.getStream().title || ""
-                }" https://www.twitch.tv/${event.broadcasterName}`,
-              );
-            },
-          );
-        }),
-      );
+      streamers.map(async (streamer) => {
+        const sub = middleware.subscribeToStreamOnlineEvents(
+          streamer,
+          (event) => {
+            console.log(`${event.broadcasterDisplayName} just went live!`);
+            channel.send(
+              `Hype! ${event.broadcasterDisplayName} is live. "${
+              event.getStream().title || ""
+              }" https://www.twitch.tv/${event.broadcasterName}`,
+            );
+          },
+        );
+        streamSubs.push(sub);
+      }),
     });
   } catch (err) {
     console.log("listening error: ", err);
