@@ -8,6 +8,8 @@ import { keepAlive } from "./server.js";
 import Discord from "discord.js";
 import dotenv from "dotenv";
 import fs from "fs";
+import { ClientCredentialsAuthProvider } from "@twurple/auth";
+import { ApiClient } from "@twurple/api";
 
 // Importing this allows you to access the environment variables of the running node process
 dotenv.config();
@@ -136,6 +138,61 @@ setInterval(() => {
     }
   });
 }, 210000); // check every 3.5 minutes
+
+// ******************************
+// * TWITCH Alert
+// ******************************
+
+const clientId = process.env.TW_CLIENT_ID;
+const clientSecret = process.env.TW_SECRET;
+
+const authProvider = new ClientCredentialsAuthProvider(clientId, clientSecret);
+const apiClient = new ApiClient({ authProvider });
+
+async function getUserStream(userId) {
+  return await apiClient.streams.getStreamByUserId(userId);
+}
+
+const castingCaptivatingStreamsId = "714675982442692661";
+const castingCaptivitatingStreamsChannel = async () => await client.channels.fetch(
+  castingCaptivatingStreamsId,
+);
+// https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
+const RAKA = 479927329;
+const VALK = 141728236;
+const KRUSH = 137355398;
+const BRAINER = 59023461;
+const streamers = [RAKA, VALK, KRUSH, BRAINER];
+
+const streamerMap = new Map()
+
+streamers.forEach((streamer) => streamerMap.set(streamer, true))
+
+setInterval(async () => {
+  for (const [userId, isLive] of streamerMap.entries()) {
+    if (!isLive) {
+      const userStream = await getUserStream(userId)
+      if (userStream !== null) {
+        streamerMap.set(userId, true)
+        const discordChannel = await castingCaptivitatingStreamsChannel()
+
+        discordChannel.send(
+          `Hype! **${userStream.userDisplayName}** is live, streaming ${userStream.gameName}.
+          > ${
+          userStream.title || "No title ☹️"
+          } https://www.twitch.tv/${userStream.userName}`,
+        );
+
+      }
+    } else {
+      const userStream = await getUserStream(userId)
+      if (userStream === null) {
+        streamerMap.set(userId, false)
+      }
+    }
+  }
+}, 60000); // check every 1 minutes
+
 
 // Here you can login the bot. It automatically attempts to login the bot
 // with the environment variable you set for your bot token ("DISCORD_TOKEN")
