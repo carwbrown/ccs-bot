@@ -170,27 +170,25 @@ streamers.forEach((streamer) => streamerMap.set(streamer, true))
 
 setInterval(async () => {
   for (const [userId, isLive] of streamerMap.entries()) {
-    if (!isLive) {
-      const userStream = await getUserStream(userId)
-      if (userStream !== null) {
-        streamerMap.set(userId, true)
-        const discordChannel = await castingCaptivitatingStreamsChannel()
+    const userStream = await getUserStream(userId)
+    if (!isLive && userStream !== null) {
+      // console.log('!isLive userStream: ', userStream, userId)
+      streamerMap.set(userId, true)
+      const discordChannel = await castingCaptivitatingStreamsChannel()
 
-        discordChannel.send(
-          `Hype! **${userStream.userDisplayName}** is live, streaming ${userStream.gameName}.
+      discordChannel.send(
+        `Hype! **${userStream.userDisplayName}** is live, streaming ${userStream.gameName}.
           > ${
-          userStream.title || "No title ☹️"
-          } https://www.twitch.tv/${userStream.userName}`,
-        );
-
-      }
-    } else {
-      const userStream = await getUserStream(userId)
-      if (userStream === null) {
-        streamerMap.set(userId, false)
-      }
+        userStream.title || "No title ☹️"
+        } https://www.twitch.tv/${userStream.userName}`,
+      );
+    }
+    if (isLive && userStream === null) {
+      // console.log('isLive userStream: ', userStream, userId)
+      streamerMap.set(userId, false)
     }
   }
+  // console.log('streamerMap: ', streamerMap)
 }, 60000); // check every 1 minutes
 
 
