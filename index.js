@@ -61,8 +61,6 @@ const CHANNEL_ID_CCS_SCRIM = "675808497988009986";
 // ******************************
 
 setInterval(() => {
-  console.log("Hello, mesos-bot-test interval has started");
-
   fs.readFile("./css.json", (err, data) => {
     if (err) throw err;
     let fileData = JSON.parse(data);
@@ -77,9 +75,6 @@ setInterval(() => {
         timeNow,
         "855544406152445953", // permanentMessageId
       );
-      console.log(
-        `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_TEST].name} channel just checked`,
-      );
     }
   });
 }, 6000000); // check every 100 minutes
@@ -89,8 +84,6 @@ setInterval(() => {
 // ******************************
 
 setInterval(() => {
-  console.log("Hello, lfg interval has started");
-
   fs.readFile("./css.json", (err, data) => {
     if (err) throw err;
     let fileData = JSON.parse(data);
@@ -104,9 +97,6 @@ setInterval(() => {
         timeNow,
         "860249299354255400", // permanentMessageId
       );
-      console.log(
-        `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_LFG].name} channel just checked`,
-      );
     }
   });
 }, 180000); // check every 3 minutes
@@ -116,8 +106,6 @@ setInterval(() => {
 // ******************************
 
 setInterval(() => {
-  console.log("Hello, scrim channel interval has started");
-
   fs.readFile("./css.json", (err, data) => {
     if (err) throw err;
     let fileData = JSON.parse(data);
@@ -131,9 +119,6 @@ setInterval(() => {
         fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].ttl,
         timeNow,
         "858394992182427670",
-      );
-      console.log(
-        `${fileData[SERVER_ID_CCS].name}'s ${fileData[SERVER_ID_CCS][CHANNEL_ID_CCS_SCRIM].name} channel just checked`,
       );
     }
   });
@@ -172,7 +157,7 @@ setInterval(async () => {
   for (const [userId, isLive] of streamerMap.entries()) {
     const userStream = await getUserStream(userId)
     if (!isLive && userStream !== null) {
-      // console.log('!isLive userStream: ', userStream, userId)
+      console.log('!isLive userStream: ', userStream.userDisplayName, userId)
       streamerMap.set(userId, true)
       const discordChannel = await castingCaptivitatingStreamsChannel()
 
@@ -184,11 +169,10 @@ setInterval(async () => {
       );
     }
     if (isLive && userStream === null) {
-      // console.log('isLive userStream: ', userStream, userId)
+      console.log('isLive userStream: ', userStream, userId)
       streamerMap.set(userId, false)
     }
   }
-  // console.log('streamerMap: ', streamerMap)
 }, 60000); // check every 1 minutes
 
 
