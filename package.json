@@ -12,6 +12,7 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "@replit/database": "^2.0.1",
     "@twurple/api": "^5.0.5",
     "@twurple/auth": "^5.0.5",
     "@twurple/eventsub": "^5.0.5",

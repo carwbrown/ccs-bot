@@ -10,6 +10,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import { ClientCredentialsAuthProvider } from "@twurple/auth";
 import { ApiClient } from "@twurple/api";
+import { Client as ReplItClient } from "@replit/database";
 
 // Importing this allows you to access the environment variables of the running node process
 dotenv.config();
@@ -139,9 +140,8 @@ async function getUserStream(userId) {
 }
 
 const castingCaptivatingStreamsId = "714675982442692661";
-const castingCaptivitatingStreamsChannel = async () => await client.channels.fetch(
-  castingCaptivatingStreamsId,
-);
+const castingCaptivitatingStreamsChannel = async () =>
+  await client.channels.fetch(castingCaptivatingStreamsId);
 // https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
 const RAKA = 479927329;
 const VALK = 141728236;
@@ -149,32 +149,59 @@ const KRUSH = 137355398;
 const BRAINER = 59023461;
 const streamers = [RAKA, VALK, KRUSH, BRAINER];
 
-const streamerMap = new Map()
-
-streamers.forEach((streamer) => streamerMap.set(streamer, true))
+const streamerObj = {
+  479927329: { name: "RAKA", isLive: false, title: "" },
+  141728236: { name: "VALK", isLive: false, title: "" },
+  137355398: { name: "Krush", isLive: false, title: "" },
+  59023461: { name: "Brainer", isLive: false, title: "" },
+};
+const replItClient = new ReplItClient();
 
 setInterval(async () => {
-  for (const [userId, isLive] of streamerMap.entries()) {
-    const userStream = await getUserStream(userId)
-    if (!isLive && userStream !== null) {
-      console.log('!isLive userStream: ', userStream.userDisplayName, userId)
-      streamerMap.set(userId, true)
-      const discordChannel = await castingCaptivitatingStreamsChannel()
+  Object.entries(streamerObj).forEach((entry) => {
+    const [userId, streamerData] = entry;
+    let dbEntry = await replItClient.get(userId);
+    let isStreamerLive = false;
 
-      discordChannel.send(
-        `Hype! **${userStream.userDisplayName}** is live, streaming ${userStream.gameName}.
-          > ${
-        userStream.title || "No title ☹️"
-        } https://www.twitch.tv/${userStream.userName}`,
-      );
+    console.log("dbEntry: ", dbEntry);
+    if (!dbEntry) {
+      await replItClient.set(userId, streamerData);
+      dbEntry = { [userId]: streamerData };
     }
-    if (isLive && userStream === null) {
-      console.log('isLive userStream: ', userStream, userId)
-      streamerMap.set(userId, false)
+
+    const userStream = await getUserStream(userId);
+
+    const streamerNewlyLive = !dbEntry[userId].isLive && userStream !== null;
+    const streamerNewlyOffline = dbEntry[userId].isLive && userStream === null;
+
+    if (streamerNewlyLive) {
+      console.log("!isLive userStream: ", userStream.userDisplayName, userId);
+      streamerMap.set(userId, true);
+      const discordChannel = await castingCaptivitatingStreamsChannel();
+      if (userStream.title !== dbEntry[userId].title) {
+        discordChannel.send(
+          `Hype! **${userStream.userDisplayName}** is live, streaming ${
+            userStream.gameName
+          }.
+          > ${userStream.title || "No title ☹️"} https://www.twitch.tv/${
+            userStream.userName
+          }`,
+        );
+      }
+
+      await replItClient.set(userId, {
+        ...streamerData,
+        isLive: true,
+        title: userStream.title,
+      });
     }
-  }
+
+    if (streamerNewlyOffline) {
+      console.log("isLive userStream: ", userStream, userId);
+      await replItClient.set(userId, { ...streamerData, isLive: false });
+    }
+  });
 }, 60000); // check every 1 minutes
-
 
 // Here you can login the bot. It automatically attempts to login the bot
 // with the environment variable you set for your bot token ("DISCORD_TOKEN")
