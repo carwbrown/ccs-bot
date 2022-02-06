@@ -10,7 +10,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import { ClientCredentialsAuthProvider } from "@twurple/auth";
 import { ApiClient } from "@twurple/api";
-import { Client as ReplItClient } from "@replit/database";
+import fetch from "node-fetch";
 
 // Importing this allows you to access the environment variables of the running node process
 dotenv.config();
@@ -129,6 +129,56 @@ setInterval(() => {
 // * TWITCH Alert
 // ******************************
 
+const replItDbUrl = process.env.REPLIT_DB_URL;
+
+const getDbValueByKey = async (key) => {
+   return await fetch(replItDbUrl + "/" + key)
+      .then((e) => e.text())
+      .then((strValue) => {
+        if (!strValue) {
+          return null;
+        }
+
+        let value = strValue;
+        try {
+          // Try to parse as JSON, if it fails, we throw
+          value = JSON.parse(strValue);
+        } catch (_err) {
+          throw new SyntaxError(
+            `Failed to parse value of ${key}, try passing a raw option to get the raw value`
+          );
+        }
+
+        if (value === null || value === undefined) {
+          return null;
+        }
+
+        return value;
+      })
+}
+
+const setDbValueByKey = async (key, value) => {
+    const strValue = JSON.stringify(value);
+
+    await fetch(replItDbUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: encodeURIComponent(key) + "=" + encodeURIComponent(strValue),
+    });
+  }
+
+const getAllDbValues = async () => {
+  return await fetch(
+      replItDbUrl + "?encode=true&prefix=")
+      .then((r) => r.text())
+      .then((t) => {
+        if (t.length === 0) {
+          return [];
+        }
+        return t.split("\n").map(decodeURIComponent);
+      });
+}
+
 const clientId = process.env.TW_CLIENT_ID;
 const clientSecret = process.env.TW_SECRET;
 
@@ -142,66 +192,72 @@ async function getUserStream(userId) {
 const castingCaptivatingStreamsId = "714675982442692661";
 const castingCaptivitatingStreamsChannel = async () =>
   await client.channels.fetch(castingCaptivatingStreamsId);
-// https://www.streamweasels.com/support/convert-twitch-username-to-user-id/
-const RAKA = 479927329;
-const VALK = 141728236;
-const KRUSH = 137355398;
-const BRAINER = 59023461;
-const streamers = [RAKA, VALK, KRUSH, BRAINER];
 
-const streamerObj = {
-  479927329: { name: "RAKA", isLive: false, title: "" },
-  141728236: { name: "VALK", isLive: false, title: "" },
-  137355398: { name: "Krush", isLive: false, title: "" },
-  59023461: { name: "Brainer", isLive: false, title: "" },
-};
-const replItClient = new ReplItClient();
+// https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/
+// Add someone to DB
+//  curl $REPLIT_DB_URL -d '<STREAMER_ID>={"name":"","isLive":false,"title":""}'
+// curl $REPLIT_DB_URL -d '559592641={"name":"","isLive":false,"title":""}'
+// curl "$REPLIT_DB_URL?prefix=" list all DB entries
+// delete curl -XDELETE $REPLIT_DB_URL/2204384022043840
 
 setInterval(async () => {
-  Object.entries(streamerObj).forEach((entry) => {
-    const [userId, streamerData] = entry;
-    let dbEntry = await replItClient.get(userId);
-    let isStreamerLive = false;
+  try {
+    const allStreamers = await getAllDbValues();
+    allStreamers.forEach(async (userId) => {
+      const dbEntry = await getDbValueByKey(userId);
 
-    console.log("dbEntry: ", dbEntry);
-    if (!dbEntry) {
-      await replItClient.set(userId, streamerData);
-      dbEntry = { [userId]: streamerData };
-    }
+      const userStream = await getUserStream(userId);
 
-    const userStream = await getUserStream(userId);
+      const streamerNewlyLive = !dbEntry.isLive && userStream !== null;
+      const streamerNewlyOffline = dbEntry.isLive && userStream === null;
 
-    const streamerNewlyLive = !dbEntry[userId].isLive && userStream !== null;
-    const streamerNewlyOffline = dbEntry[userId].isLive && userStream === null;
+      if (streamerNewlyLive) {
+        const timeNow = new Date().getTime();
+        console.log("newly live userStream: ", userStream.userDisplayName, userId, timeNow);
 
-    if (streamerNewlyLive) {
-      console.log("!isLive userStream: ", userStream.userDisplayName, userId);
-      streamerMap.set(userId, true);
-      const discordChannel = await castingCaptivitatingStreamsChannel();
-      if (userStream.title !== dbEntry[userId].title) {
-        discordChannel.send(
-          `Hype! **${userStream.userDisplayName}** is live, streaming ${
-            userStream.gameName
-          }.
-          > ${userStream.title || "No title ☹️"} https://www.twitch.tv/${
-            userStream.userName
-          }`,
-        );
+        const discordChannel = await castingCaptivitatingStreamsChannel();
+
+        let lastMessage = ''
+        try{
+          const lastMsgId = discordChannel.lastMessageID
+          lastMessage = await discordChannel.messages.fetch(lastMsgId);
+        } catch (err) {
+          console.log(err, 'discord msg error')
+        }
+
+        const msgJustSent = lastMessage?.content?.startsWith(`Hype! **${userStream.userDisplayName}**`) && (lastMessage?.createdTimeStamp + 300000 > timeNow);
+
+        if (userStream.title !== dbEntry.title && userStream.gameName === "Heroes of the Storm" && !msgJustSent) {
+          discordChannel.send(
+            `Hype! **${userStream.userDisplayName}** is live, streaming ${
+              userStream.gameName
+            }.
+            > ${userStream.title || "No title ☹️"} https://www.twitch.tv/${
+              userStream.userName
+            }`,
+          );
+        }
+
+        await setDbValueByKey(userId, {
+          isLive: true,
+          title: userStream.title,
+          name: userStream.userDisplayName,
+        });
       }
 
-      await replItClient.set(userId, {
-        ...streamerData,
-        isLive: true,
-        title: userStream.title,
-      });
-    }
+      if (streamerNewlyOffline) {
+        console.log("newly offline stream: ", userId);
+        await setDbValueByKey(userId, {
+          ...dbEntry,
+          isLive: false,
+        });
+      }
+    });
+  } catch (err){
+    console.log(err)
+  }
+}, 120000); // check every 2 minutes
 
-    if (streamerNewlyOffline) {
-      console.log("isLive userStream: ", userStream, userId);
-      await replItClient.set(userId, { ...streamerData, isLive: false });
-    }
-  });
-}, 60000); // check every 1 minutes
 
 // Here you can login the bot. It automatically attempts to login the bot
 // with the environment variable you set for your bot token ("DISCORD_TOKEN")
