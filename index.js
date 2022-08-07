@@ -25,7 +25,32 @@ client.on("message", (msg) => {
   if (msg.content === "!ping") {
     msg.reply("Pong! test");
   }
+    // scrims id 669378819412459551
+   if (msg.content === "!scrims") {
+    const role = msg.guild.roles.cache.get("669378819412459551");
 
+    if (msg.member.roles.cache.find(r => r.name === "Scrims")) {
+      msg.member.roles.remove(role);
+      msg.react('⛔') 
+    } else {
+      msg.member.roles.add(role);
+      msg.react('✅') 
+    }
+  }
+
+  // lfg 896245649685766164
+  if (msg.content === "!lfg") {
+    const role = msg.guild.roles.cache.get("896245649685766164");
+    
+    if (msg.member.roles.cache.find(r => r.name === "LFG")) {
+      msg.member.roles.remove(role);
+      msg.react('⛔') 
+    } else {
+      msg.member.roles.add(role);
+      msg.react('✅') 
+    }
+  }
+  
   if (
     msg.content.startsWith("!purge") &&
     msg.member.hasPermission("ADMINISTRATOR")
@@ -194,9 +219,9 @@ const castingCaptivitatingStreamsChannel = async () =>
   await client.channels.fetch(castingCaptivatingStreamsId);
 
 // https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/
-// Add someone to DB
+// Add someone to DB - wildheart_esports
 //  curl $REPLIT_DB_URL -d '<STREAMER_ID>={"name":"","isLive":false,"title":""}'
-// curl $REPLIT_DB_URL -d '559592641={"name":"","isLive":false,"title":""}'
+// curl $REPLIT_DB_URL -d '139660583={"name":"","isLive":false,"title":""}'
 // curl "$REPLIT_DB_URL?prefix=" list all DB entries
 // delete curl -XDELETE $REPLIT_DB_URL/2204384022043840
 

@@ -28,14 +28,15 @@ export async function purgeChannelById(
 ) {
   const channelObj = client.channels.cache.get(channelId);
   try {
-    const messages = await channelObj.messages.fetch();
-
-    for (let value of messages.values()) {
-      if (
-        value.createdTimestamp + ttlMsg < timeNow &&
-        permanentMessageId !== value.id
-      ) {
-        channelObj.messages.delete(value.id);
+    const messages = await channelObj?.messages?.fetch();
+    if(messages){
+          for (let value of messages.values()) {
+        if (
+          value.createdTimestamp + ttlMsg < timeNow &&
+          permanentMessageId !== value.id
+        ) {
+          channelObj.messages.delete(value.id);
+        }
       }
     }
   } catch (err) {
